@@ -27,7 +27,7 @@ int mysystem(char *command) {
     perror(execpath);
     exit(127);
   }
-  return 0
+  return 0;
 }
 
 /* 実行例
