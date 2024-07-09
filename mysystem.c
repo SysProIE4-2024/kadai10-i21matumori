@@ -7,14 +7,13 @@
 #include <unistd.h>    // fork, execXX のため
 #include <sys/wait.h>  // wait のため
 #include "mysystem.h"  // インタフェース
-char *execpath = "/bin/sh";
+static char *execpath = "/bin/sh";
 // system関数のクローン
 int mysystem(char *command) {
   pid_t pid;
   if (command == NULL) {
     return 1;
   } else if ((pid = fork()) < 0) {
-    perror(command);
     return -1;
   }
   if (pid != 0) {
@@ -24,7 +23,6 @@ int mysystem(char *command) {
     return status;
   } else {
     execl(execpath,"sh","-c",command,NULL);
-    perror(execpath);
     exit(127);
   }
   return 0;
@@ -63,6 +61,22 @@ total 616
 -rw-r--r--  1 matsumoriyuna  staff    1435  7  8 12:39 mysystem.c
 -rw-r--r--  1 matsumoriyuna  staff      90  7  4 09:42 mysystem.h
 retval = 00000000
+% ./mysysmain "mn"                          <-- コマンドが存在しない場合
+mysystem:
+sh: mn: command not found
+retval = 00007f00
+system:
+sh: mn: command not found
+retval = 00007f00
+% ./mysysmain "cp"                          <-- コマンドがエラーを起こした場合
+mysystem:
+usage: cp [-R [-H | -L | -P]] [-fi | -n] [-aclpSsvXx] source_file target_file
+       cp [-R [-H | -L | -P]] [-fi | -n] [-aclpSsvXx] source_file ... target_directory
+retval = 00004000
+system:
+usage: cp [-R [-H | -L | -P]] [-fi | -n] [-aclpSsvXx] source_file target_file
+       cp [-R [-H | -L | -P]] [-fi | -n] [-aclpSsvXx] source_file ... target_directory
+retval = 00004000
 
 ここに実行例を書く
 
